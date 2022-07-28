@@ -36,7 +36,7 @@ const print = {
       })
     })
   },
-  thermal : (name = "Disabled", change, options = {}) => {
+  thermal : (name = "Disabled", change, options = {}, settings = {}) => {
     return new Promise(async function(resolve, reject) {
       if (!name || name==="Disabled") reject("No printer selected")
       console.log("Sending print job to interface:", name)
@@ -45,30 +45,34 @@ const print = {
         interface: name,
         ...options
       });
-      job.alignCenter();
-      job.bold(true);
-      job.setTextSize(2,2);
-      job.println(change.username);
-      job.println(change.newPassword);
-      job.setTextSize(0,0);
-      if (change.forceChange) {
-        job.println(`
-This is a temporary password.`);
+      
+      let txt = settings.PRINT_TEMPLATE.split("\n");
+      if (change.forceChange) txt = settings.PRINT_TEMPLATE_F.split("\n");
+      for (var i = 0; i < txt.length; i++){
+        let text = txt[i].replace(/%username%/g, change.username);
+        text = text.replace(/%password%/g, change.newPassword);
+        const txtArray = text.split(" ");
+        const a = txtArray[0]
+        job.setTextSize(0,0);
+        job.alignCenter();
         job.bold(false);
-        job.println(`
-You will be asked to change this
-at next login.
-`);
-      } else {
-        job.bold(false);
-        job.println(`
-Please change this password
-after logging in.
-`);
-        job.bold(true);
+        job.upsideDown(false);
+        job.invert(false);
+        job.underline(false);
+        if (a[0] !== "#"){ job.println(text); continue; }
+        if ( a.search("c") >= 0 ){ job.cut(); continue; }
+        const f = a.search("f");
+        if (f >= 0){
+          const textSize = parseInt(a[f+1]);
+          job.setTextSize(textSize,textSize); // 0-7
+        }
+        if ( a.search("b") >= 0 ) job.bold(true);
+        if ( a.search("u") >= 0 ) job.underline(true);
+        if ( a.search("!") >= 0 ) job.invert(true);
+        if ( a.search("<") >= 0 ) job.alignLeft();
+        if ( a.search(">") >= 0 ) job.alignRight();
+        job.println( txtArray.slice(1, txtArray.length).join(" ") );
       }
-      job.setTextSize(2,2);
-      job.cut();
       try {
         let execute = job.execute()
         resolve(execute);
@@ -198,7 +202,7 @@ const resetPassword = (settings = {}, username = '', forceChange = false) => {
             if (settings.PRINTER.name !== "Disabled"){
               let name = settings.PRINTER.name;
               if ( settings.PRINTER.name.search("\\\\") < 0 ) name = "\\\\localhost\\"+settings.PRINTER.name;
-              print.thermal(name, { newPassword, username, forceChange })
+              print.thermal(name, { newPassword, username, forceChange }, {}, settings)
               .then( ( jobID )=> {
                 return resolve(newPassword, jobID);
               }).catch((err)=>{

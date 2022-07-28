@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
+import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
@@ -16,6 +17,7 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
     useEffect(() => {
         if (!show || gotPrinters) return
         const loading = toast.loading('Finding Printers');
+        setLoading("PRINTERS", true);
         printer.getPrinters().then( ( printerList )=> {
             console.log('Printer List:',printerList)
             setPrinters([
@@ -23,10 +25,12 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
                 ...printerList
             ]);
             gotPrintersS(true);
+            setLoading("PRINTERS", false);
             toast.success('Found printers 🖨️', { id: loading });
         }).catch((err)=>{
             console.error( String(err) );
             toast.error(String(err), { id: loading });
+            setLoading("PRINTERS", false);
         });
     }, [show]);
 
@@ -39,7 +43,8 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
     const handleClose = () => {setShow(false); clearFeedback({}); };
     const [waitingFor, setLoaders] = useState({
         LDAP_URI : false,
-        LDAP_AUTH : false
+        LDAP_AUTH : false,
+        PRINTERS : false
     })
     const setLoading = (key, value = true) => {
         const clone = structuredClone(waitingFor);
@@ -94,7 +99,7 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
         updateValue('PRINTER',{name : target.Name, port : target.PortName })
     }
     const Printers = printers.map((printer) => {
-        return printer.Name && <ListGroup.Item active={settings.PRINTER && settings.PRINTER.name===printer.Name} key={printer.Name} as="li" onClick={()=>{ setPrinter(printer); }} action>{printer.shareName || printer.Name}</ListGroup.Item>
+        return printer.Name && <ListGroup.Item className="pointer" active={settings.PRINTER && settings.PRINTER.name===printer.Name} key={printer.Name} as="li" onClick={()=>{ setPrinter(printer); }} action>{printer.shareName || printer.Name}</ListGroup.Item>
     });
     const saveSettings = () => {
         config.save(settings).then( ()=> {
@@ -135,12 +140,19 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
                 { (!feedback.response.LDAP_AUTH) && <Form.Text className="text-muted">{waitingFor.LDAP_AUTH ? `Connecting as ${settings.LDAP_AUTH}...` : "Credentails used to authenticate with LDAP ( domain\\username or DN )"}</Form.Text> }
             </Form.Group>
             <Form.Group className="mb-3">
-                <Form.Label className="fw-semibold">Auto-Print</Form.Label>
-                <InputGroup className="mb-0">
-                    <ListGroup as="ul">
+                <Form.Label className="fw-semibold">Auto-Print {waitingFor.PRINTERS && <Spinner animation="border" size="sm"/>}</Form.Label>
+                <InputGroup className="mb-3">
+                    <ListGroup as="ul" style={{width:"100%"}} >
                         {Printers}
                     </ListGroup>
                 </InputGroup>
+                <FloatingLabel className="mb-3" label="Text Template">
+                    <Form.Control value={settings.PRINT_TEMPLATE} onChange={e => {updateValue('PRINT_TEMPLATE',e.target.value)}} as="textarea" style={{ height: '100px' }} />
+                </FloatingLabel>
+                <FloatingLabel className="mb-3" label="Text Template (if change forced)">
+                    <Form.Control value={settings.PRINT_TEMPLATE_F} onChange={e => {updateValue('PRINT_TEMPLATE_F',e.target.value)}}as="textarea" style={{ height: '100px' }} />
+                </FloatingLabel>
+                <Form.Text className="text-muted">Read documentation for print templating/formatting.</Form.Text>
             </Form.Group>
         </Modal.Body>
         <Modal.Footer>

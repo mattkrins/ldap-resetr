@@ -19,6 +19,29 @@ import Settings from './Settings';
 
 const { resetPassword, config, encrypt, encryption, version } = window
 
+const defaults = {
+  DARK : false,
+  LDAP_URI : '',
+  LDAP_AUTH_USER : '',
+  LDAP_AUTH_PASS : '',
+  PRINTER : 'Disabled',
+  PRINT_TEMPLATE : 
+`#f2b %username%
+#f2b %password%
+
+Please change this password
+after logging in.
+#c `,
+  PRINT_TEMPLATE_F :
+`#f2b %username%
+#f2b %password%
+
+#b This is a temporary password.
+You will be asked to change this
+at next login.
+#c `
+};
+
 function App() {
   const [showAbout, setShowAbout] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -26,17 +49,11 @@ function App() {
   const [tooltip, showTooltip] = useState(true);
   const [username, setUsername] = useState('');
   const [error, setError] = useState(false);
-  const [settings, setSettings] = useState({
-    DARK : false,
-    LDAP_URI : '',
-    LDAP_AUTH_USER : '',
-    LDAP_AUTH_PASS : '',
-    PRINTER : 'Disabled'
-  })
+  const [settings, setSettings] = useState(defaults)
   useEffect(() => {
     config.load().then( ( config = {} )=> {
       if (config.DARK) import ('bootstrap-dark-5/dist/css/bootstrap-dark.css');
-      setSettings(config);
+      setSettings({ ...settings, ...config});
     }).catch((err)=>{
       console.error(String(err));
       setError(String(err));
@@ -53,6 +70,13 @@ function App() {
       setError(String(err));
       toast.error(String(err))
     });
+  };
+  const factoryReset = () => {
+    config.save(defaults).then( ()=> {
+      toast.success('Default settings restored and saved.');
+      setShowAbout(false);
+      setSettings(defaults);
+  }).catch((err)=>{ console.error( String(err) ) });
   };
   const AboutModal = () => {
     let copy = structuredClone(settings);
@@ -75,7 +99,7 @@ function App() {
             Electron: {window.versions.electron}<br/>
             React: {React.version}
         </p>
-        <Accordion>
+        <Accordion className="mb-3">
           <Accordion.Item eventKey="0">
             <Accordion.Header>Debug Info</Accordion.Header>
             <Accordion.Body  className="text-start">
@@ -83,6 +107,7 @@ function App() {
             </Accordion.Body>
           </Accordion.Item>
         </Accordion>
+        <Button variant="primary" onClick={factoryReset}>Factory Reset</Button>
       </Modal.Body>
     </Modal>
   )};
