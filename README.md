@@ -32,8 +32,11 @@ Select a thermal printer to print the newly generated password on. (currently wi
 You can customise the receipt printed by the thermal printer by prefixing a line with a # and a space.
 Anything after the first space is treated as text to print, anything prior is formatting.
 There are also two text placeholders available: `%username%` `%password%`
+
 If no # is provided than the line will be standard text. For example:
+
 ![receipt photo](https://user-images.githubusercontent.com/2367602/181650249-a3b9353b-b67d-449f-852a-4012276c1d63.png)
+
 To achieve this output you would use:
 ```
 #f2b %username%
@@ -45,10 +48,8 @@ at next login.
 #c 
 ```
 
-
-
 ### Formatting Legend
-| character | purpose |
+| Character | Purpose |
 | --- | --- |
 | f0 | Font Size (0-7) |
 | c | Cut receipt on this line |
