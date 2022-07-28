@@ -1,0 +1,91 @@
+{
+  "name": "ldap-resetr",
+  "version": "1.0.0",
+  "author": "mattkrins",
+  "description": "Reset LDAP user password and print with one click",
+  "private": true,
+  "main": "./public/electron.js",
+  "homepage": "./",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mattkrins/ldap-resetr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mattkrins/ldap-resetr/issues"
+  },
+  "dependencies": {
+    "@testing-library/jest-dom": "^5.16.4",
+    "@testing-library/react": "^13.3.0",
+    "@testing-library/user-event": "^13.5.0",
+    "bootstrap": "^5.2.0-beta1",
+    "bootstrap-dark-5": "^1.1.3",
+    "js-yaml": "^4.1.0",
+    "ldapjs": "^2.3.3",
+    "node-abi": "^3.22.0",
+    "node-thermal-printer": "^4.1.2",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.4.0",
+    "react-dom": "^18.2.0",
+    "react-hot-toast": "^2.3.0",
+    "react-icons": "^4.4.0",
+    "react-tooltip": "^4.2.21",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "electron:start": "concurrently -k \"cross-env BROWSER=none npm start\" \"wait-on http://localhost:3000 && electronmon .\"",
+    "electron:package:win": "npm run build && electron-builder -w -c.extraMetadata.main=build/electron.js --win portable",
+    "electron:package:mac": "npm run build && electron-builder -m -c.extraMetadata.main=build/electron.js",
+    "electron:package:linux": "npm run build && electron-builder -l -c.extraMetadata.main=build/electron.js",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "electronmon": "electronmon ."
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      "last 1 electron version"
+    ],
+    "development": [
+      "last 1 electron version"
+    ]
+  },
+  "devDependencies": {
+    "concurrently": "^7.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^19.0.8",
+    "electron-builder": "^23.1.0",
+    "electronmon": "^2.0.2",
+    "eslint": "^8.20.0",
+    "prettier": "^2.7.1",
+    "react-scripts": "5.0.1",
+    "wait-on": "^6.0.1"
+  },
+  "build": {
+    "appId": "com.electron.ldap-resetr",
+    "productName": "ldap-resetr",
+    "electronVersion": "19.0.8",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "public"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "deb"
+    }
+  }
+}
