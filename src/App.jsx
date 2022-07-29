@@ -36,14 +36,21 @@ function App() {
     });
 
   }, []);
-  const handleClick = (val) => {
+  const handleClick = () => {
+    if (resetting) return;
     setError(false);
     setResetting(true);
+    const timeout = setTimeout(()=>{
+      toast.error("Unknown Error. Print failure?");
+    }, 5000)
+
     resetPassword(settings, username, forceChange).then( ( entry )=> {
+      clearTimeout(timeout);
       console.log(entry)
       setResetting(false);
       toast.success('Password reset to ' + entry)
     }).catch((err)=>{
+      clearTimeout(timeout);
       console.error(String(err));
       setResetting(false);
       setError(String(err));
@@ -103,7 +110,7 @@ function App() {
       </InputGroup>
       <InputGroup className="justify-content-md-center">
         <FloatingLabel controlId="Username" label="Username">
-            <Form.Control isInvalid={error} value={username} onInput={e => {setUsername(e.target.value)}} type="text" placeholder="Username" className="rounded-0 rounded-start" />
+            <Form.Control isInvalid={error} value={username} onKeyDown={e => { if (e.key === 'Enter'){handleClick()}  }} onInput={e => {setUsername(e.target.value)}} type="text" placeholder="Username" className="rounded-0 rounded-start" />
         </FloatingLabel>
         <InputGroup.Checkbox data-tip data-for="registerTip" checked={forceChange} onChange={e => {handleCheck(e.target.checked)}}  onMouseLeave={() => { showTooltip(false); setTimeout(() => showTooltip(true), 50); }} />
         {tooltip && <ReactTooltip id="registerTip" place="top" effect="solid" globalEventOff="click">

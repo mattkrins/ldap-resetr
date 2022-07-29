@@ -20,12 +20,13 @@ app.on("web-contents-created", (event, contents) => {
   contents.on("will-navigate", (event, navigationUrl) => {
     const parsedUrl = new URL(navigationUrl);
     if (!allowedNavigationDestinations.includes(parsedUrl.origin)) {
-      //event.preventDefault();
+      event.preventDefault();
     }
   });
 });
 
 const createWindow = () => {
+    
     const ver = app.getVersion();
     const win = new BrowserWindow({
       width: 800,

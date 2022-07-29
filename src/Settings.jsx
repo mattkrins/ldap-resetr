@@ -135,7 +135,7 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
         updateValue('PRINTER',{name : target.Name, port : target.PortName })
     }
     const Printers = printers.map((printer) => {
-        return printer.Name && <ListGroup.Item className="pointer" active={settings.PRINTER && settings.PRINTER.name===printer.Name} key={printer.Name} as="li" onClick={()=>{ setPrinter(printer); }} action>{printer.shareName || printer.Name}</ListGroup.Item>
+        return printer.Name && <ListGroup.Item className="pointer p-1" active={settings.PRINTER && settings.PRINTER.name===printer.Name} key={printer.Name} as="li" onClick={()=>{ setPrinter(printer); }} action>{printer.shareName || printer.Name}</ListGroup.Item>
     });
     const saveSettings = () => {
         config.save(settings).then( ()=> {
@@ -176,12 +176,10 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
                         {Printers}
                     </ListGroup>
                 </InputGroup>
-                <FloatingLabel className="mb-3" label="Text Template">
-                    <Form.Control value={settings.PRINT_TEMPLATE} onChange={e => {updateValue('PRINT_TEMPLATE',e.target.value)}} as="textarea" style={{ height: '100px' }} />
-                </FloatingLabel>
-                <FloatingLabel className="mb-3" label="Text Template (if change forced)">
-                    <Form.Control value={settings.PRINT_TEMPLATE_F} onChange={e => {updateValue('PRINT_TEMPLATE_F',e.target.value)}}as="textarea" style={{ height: '100px' }} />
-                </FloatingLabel>
+                <Form.Text className="text-muted">Text Template</Form.Text>
+                <Form.Control className="mb-3" value={settings.PRINT_TEMPLATE} onChange={e => {updateValue('PRINT_TEMPLATE',e.target.value)}} as="textarea" style={{ height: '100px' }} />
+                <Form.Text className="text-muted">Text Template (if change forced)</Form.Text>
+                <Form.Control className="mb-3" value={settings.PRINT_TEMPLATE_F} onChange={e => {updateValue('PRINT_TEMPLATE_F',e.target.value)}}as="textarea" style={{ height: '100px' }} />
                 <Form.Text className="text-muted">Read github docs for print templating/formatting.</Form.Text>
             </Form.Group>
             <Form.Group className="mb-3">

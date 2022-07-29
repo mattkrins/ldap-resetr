@@ -26,7 +26,9 @@ This is the host / target LDAP server. A secure / SSL connection is required to 
 Username / Password to authenticate with the host / target LDAP server. Username must be prefixed by the target domain or an LDAP distinguished name (DN), eg. cn=John,ou=Users,dc=com,dc=domain
 ### Auto-Print
 Select a thermal printer to print the newly generated password on. (currently windows only)
+
 **Note**: To use a locally connected printer (not networked) you will need to share the local printer under the same name so it can be accessed via \\\\localhost\\PrinterName.
+
 
 ### Text Templates
 You can customise the receipt printed by the thermal printer by prefixing a line with a # and a space.
