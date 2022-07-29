@@ -1,6 +1,6 @@
 const { contextBridge } = require("electron");
 const ldap = require( "ldapjs" );
-const { generatePassword } = require( "./pswdgen" )
+const { generatePassword, fetchDino } = require( "./pswdgen" )
 const { exec } = require('child_process');
 
 const ThermalPrinter = require("node-thermal-printer").printer;
@@ -171,10 +171,15 @@ const resetPassword = (settings = {}, username = '', forceChange = false) => {
         scope: 'sub',
         paged: true,
         sizeLimit: 1000,
-      } ).then( ( entry )=> {
+      } ).then( async ( entry )=> {
         if (!entry || !entry.object || !entry.object.dn) return reject( `LDAP Failed to load user` );
         const userDN = entry.object.dn;
-        const newPassword = generatePassword();
+        let newPassword;
+        if (settings.PASS_DINO) {
+          newPassword = await fetchDino(settings.PASS_DINO_STR, settings.PROXY);
+        }else{
+          newPassword = generatePassword();
+        }
         const encodedPassword = encodePassword(newPassword);
         
 
@@ -261,4 +266,6 @@ process.once("loaded", () => {
   contextBridge.exposeInMainWorld("config", config);
   contextBridge.exposeInMainWorld("encrypt", encrypt);
   contextBridge.exposeInMainWorld("resetPassword", resetPassword);
+  contextBridge.exposeInMainWorld("generatePassword", generatePassword);
+  contextBridge.exposeInMainWorld("fetchDino", fetchDino);
 });

@@ -2,7 +2,7 @@ const { app, BrowserWindow, protocol } = require('electron')
 const path = require("path");
 const url = require("url");
 
-const allowedNavigationDestinations = "https://my-electron-app.com";
+const allowedNavigationDestinations = "https://www.dinopass.com";
 
 app.whenReady().then(() => {
     createWindow();
@@ -20,7 +20,7 @@ app.on("web-contents-created", (event, contents) => {
   contents.on("will-navigate", (event, navigationUrl) => {
     const parsedUrl = new URL(navigationUrl);
     if (!allowedNavigationDestinations.includes(parsedUrl.origin)) {
-      event.preventDefault();
+      //event.preventDefault();
     }
   });
 });

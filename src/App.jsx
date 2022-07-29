@@ -8,12 +8,11 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import ReactTooltip from "react-tooltip";
 import Modal from 'react-bootstrap/Modal';
 import Accordion from 'react-bootstrap/Accordion';
+import Spinner from 'react-bootstrap/Spinner';
 
 import { BsPersonCircle, BsGear, BsQuestionCircle } from "react-icons/bs";
 
 import toast, { Toaster } from 'react-hot-toast';
-
-import './App.css';
 
 import Settings from './Settings';
 
@@ -24,7 +23,15 @@ const defaults = {
   LDAP_URI : '',
   LDAP_AUTH_USER : '',
   LDAP_AUTH_PASS : '',
+  PROXY : '',
   PRINTER : 'Disabled',
+  PASS_DINO : false,
+  PASS_DINO_STR : true,
+  PASS_PRE : false,
+  PASS_APP : true,
+  PASS_CAP : true,
+  PASS_NUM : true,
+  PASS_WORDS : 2,
   PRINT_TEMPLATE : 
 `#f2b %username%
 #f2b %password%
@@ -50,6 +57,7 @@ function App() {
   const [username, setUsername] = useState('');
   const [error, setError] = useState(false);
   const [settings, setSettings] = useState(defaults)
+  const [resetting, setResetting] = useState(false)
   useEffect(() => {
     config.load().then( ( config = {} )=> {
       if (config.DARK) import ('bootstrap-dark-5/dist/css/bootstrap-dark.css');
@@ -62,11 +70,14 @@ function App() {
   }, []);
   const handleClick = (val) => {
     setError(false);
+    setResetting(true);
     resetPassword(settings, username, forceChange).then( ( entry )=> {
       console.log(entry)
+      setResetting(false);
       toast.success('Password reset to ' + entry)
     }).catch((err)=>{
       console.error(String(err));
+      setResetting(false);
       setError(String(err));
       toast.error(String(err))
     });
@@ -130,8 +141,7 @@ function App() {
         {tooltip && <ReactTooltip id="registerTip" place="top" effect="solid" globalEventOff="click">
           User must change password at next login
         </ReactTooltip> }
-        <Button variant="outline-primary" onClick={handleClick}>Reset</Button>
-        <Form.Control.Feedback type="invalid" className="m-0">test</Form.Control.Feedback>
+        <Button disabled={resetting} variant="outline-primary" onClick={handleClick}>{resetting ? <Spinner animation="border" size="sm"/> : 'Reset'}</Button>
       </InputGroup>
       <InputGroup className="justify-content-md-center text-center">
         {error && <div className="fw-light text-danger" style={{minWidth:"256px"}}>{error}</div>}

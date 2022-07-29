@@ -1,3 +1,5 @@
+const request = require( "request" )
+
 let dictionary = ["able", "about", "above", "acres", "act", "add", "adult", "after",
     "again", "age", "ago", "agree", "ahead", "aid", "air", "alike", "alive",
     "all", "allow", "alone", "along", "aloud", "also", "among", "angle",
@@ -128,18 +130,36 @@ let dictionary = ["able", "about", "above", "acres", "act", "add", "adult", "aft
 const specials = "!?$%&=";
 function randomSpecialChar() { return specials.substr(Math.floor(specials.length*Math.random()), 1); }
 function capitalize(s) { return s[0].toUpperCase() + s.slice(1); }
+function validString(str) { return str != null && typeof str === "string" && str.length > 0; }
 
 module.exports = {
-    generatePassword : (words = 2, camelCase = true) => {
+    generatePassword : (words = 2, camelCase = true, requireNumbers = true, prependSpecial = false, appendSpecial = true) => {
         let parts = [];
+        if (prependSpecial) parts.push( randomSpecialChar() );
         for (let i = 0; i < words; i++) {
             let randomWord = dictionary[Math.floor(Math.random() * dictionary.length)];
             if (camelCase && i>0) randomWord = capitalize(randomWord);
             parts.push(randomWord);
-            const randomNumber = Math.floor(Math.random() * 10);
-            parts.push(randomNumber);
+            if (requireNumbers){
+                const randomNumber = Math.floor(Math.random() * 8) + 2;
+                parts.push(randomNumber);
+            }
         }
-        parts.push( randomSpecialChar() );
+        if (appendSpecial) parts.push( randomSpecialChar() );
         return String(parts.join(""));
+    },
+    fetchDino : (strong = true, proxy = '') => {
+        return new Promise(function(resolve, reject) {
+            const options = {
+                url: 'https://www.dinopass.com/password/' + (strong ? 'strong' : 'simple'),
+                timeout : 8000
+            }
+            if (validString(proxy)) options.proxy = proxy;
+            request.get(options, function (error, response, body) {
+                if (error) reject(error);
+                if (!body || body==="") reject("Fetch Error");
+                resolve(body);
+            });
+        });
     }
 };

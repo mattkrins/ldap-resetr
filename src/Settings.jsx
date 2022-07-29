@@ -7,15 +7,17 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Spinner from 'react-bootstrap/Spinner';
 import ListGroup from 'react-bootstrap/ListGroup';
 
-const { LDAP, printer, config } = window
+const { LDAP, printer, config, generatePassword, fetchDino } = window
 
 export default function Settings({show, setShow, settings, setSettings, toast}) {
     const [feedback, setFeedback] = useState({ errors : {}, response : {} })
     const [printers, setPrinters] = useState([])
     const [gotPrinters, gotPrintersS] = useState(false)
+    const [samplePassword, samplePasswordS] = useState("")
 
     useEffect(() => {
-        if (!show || gotPrinters) return
+        if (!show) return
+        if (gotPrinters) return
         const loading = toast.loading('Finding Printers');
         setLoading("PRINTERS", true);
         printer.getPrinters().then( ( printerList )=> {
@@ -34,6 +36,26 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
         });
     }, [show]);
 
+    const generateSample = () => {
+        if (settings.PASS_DINO){
+            setLoading("GENERATOR", true);
+            fetchDino(settings.PASS_DINO_STR, settings.PROXY).then((response="Response Error")=>{
+                samplePasswordS(response);
+                setLoading("GENERATOR", false);
+            }).catch((err)=>{
+                console.error( String(err) );
+                toast.error(String(err));
+                setLoading("GENERATOR", false);
+            }); return
+        }
+        samplePasswordS( generatePassword(
+            settings.PASS_WORDS,
+            settings.PASS_CAP,
+            settings.PASS_NUM,
+            settings.PASS_PRE,
+            settings.PASS_APP
+        ) );
+    }
     const clearFeedback = () => {
         setFeedback({ errors : {}, response : {} })
     }
@@ -44,7 +66,8 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
     const [waitingFor, setLoaders] = useState({
         LDAP_URI : false,
         LDAP_AUTH : false,
-        PRINTERS : false
+        PRINTERS : false,
+        GENERATOR : false
     })
     const setLoading = (key, value = true) => {
         const clone = structuredClone(waitingFor);
@@ -95,6 +118,19 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
             }).catch((err)=>{ error( [String(err)], id ) });
         } catch (err) { error( [String(err)], id ) }
     }
+    const PROXY = () => {
+        const id = testInput("PROXY")
+        setLoading(id, true);
+        clearFeedback()
+        try {
+            fetchDino(settings.PASS_DINO_STR, settings.PROXY).then((response = false)=>{
+                if (!response) error( ["Response Error"], id )
+                success(["Connection Established."], id)
+            }).catch((err)=>{
+                error( [String(err)], id )
+            });
+        } catch (err) { error( [String(err)], id ) }
+    }
     const setPrinter = (target) => {
         updateValue('PRINTER',{name : target.Name, port : target.PortName })
     }
@@ -115,7 +151,7 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
             <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Theme</Form.Label>
                 <InputGroup className="mb-0">
-                    <Form.Check checked={settings.DARK}  onChange={e => {updateValue('DARK',e.target.checked); }} type="switch" id="custom-switch" label="Use Dark Mode (Requires App Reload)" />
+                    <Form.Check checked={settings.DARK}  onChange={e => {updateValue('DARK',e.target.checked); }} type="switch" label="Use Dark Mode (Requires App Reload)" />
                 </InputGroup>
             </Form.Group>
             <Form.Group className="mb-3">
@@ -152,7 +188,37 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
                 <FloatingLabel className="mb-3" label="Text Template (if change forced)">
                     <Form.Control value={settings.PRINT_TEMPLATE_F} onChange={e => {updateValue('PRINT_TEMPLATE_F',e.target.value)}}as="textarea" style={{ height: '100px' }} />
                 </FloatingLabel>
-                <Form.Text className="text-muted">Read documentation for print templating/formatting.</Form.Text>
+                <Form.Text className="text-muted">Read github docs for print templating/formatting.</Form.Text>
+            </Form.Group>
+            <Form.Group className="mb-3">
+                <Form.Label className="fw-semibold">Password Generation</Form.Label>
+                <InputGroup className="mb-3"><Form.Check checked={settings.PASS_DINO}  onChange={e => {updateValue('PASS_DINO',e.target.checked); }} type="switch" label="Use DinoPass API" /></InputGroup>
+                {!settings.PASS_DINO ? (<>
+                <InputGroup className="mb-1">
+                    <InputGroup.Text>Words To Generate</InputGroup.Text>
+                    <Form.Control type="number" min="1" max="10" value={settings.PASS_WORDS} onInput={e => {updateValue('PASS_WORDS',e.target.value)}} placeholder='1+' />
+                </InputGroup>
+                <InputGroup className="mb-0"><Form.Check checked={settings.PASS_PRE}  onChange={e => {updateValue('PASS_PRE',e.target.checked); }} type="switch" label="Prepend special character" /></InputGroup>
+                <InputGroup className="mb-0"><Form.Check checked={settings.PASS_APP}  onChange={e => {updateValue('PASS_APP',e.target.checked); }} type="switch" label="Append special character" /></InputGroup>
+                <InputGroup className="mb-0"><Form.Check checked={settings.PASS_CAP}  onChange={e => {updateValue('PASS_CAP',e.target.checked); }} type="switch" label="camelCase" /></InputGroup>
+                <InputGroup className="mb-2"><Form.Check checked={settings.PASS_NUM}  onChange={e => {updateValue('PASS_NUM',e.target.checked); }} type="switch" label="Use Numbers" /></InputGroup>
+                </>) : (<>
+                <InputGroup className="mb-0"><Form.Check checked={settings.PASS_DINO_STR}  onChange={e => {updateValue('PASS_DINO_STR',e.target.checked); }} type="switch" label="Simple / Strong" /></InputGroup>
+                <Form.Label className="fw-semibold">Proxy</Form.Label>
+                <InputGroup className="mb-3">
+                    <Form.Control value={settings.PROXY} disabled={waitingFor.PROXY} onInput={e => {updateValue('PROXY',e.target.value)}} isValid={feedback.response.PROXY} isInvalid={feedback.errors.PROXY} placeholder='http://proxy:8080' />
+                    <Button onClick={PROXY} disabled={waitingFor.PROXY} variant="outline-secondary">{waitingFor.PROXY ? <Spinner animation="border" size="sm"/> : 'Test'}</Button>
+                    <Form.Control.Feedback>{feedback.response.LDAP_AUTH && feedback.response.LDAP_AUTH[0]}</Form.Control.Feedback> 
+                    <Form.Control.Feedback type="invalid" className="m-0">{feedback.errors.LDAP_AUTH && feedback.errors.LDAP_AUTH[0]}</Form.Control.Feedback>
+                </InputGroup>
+                </>)}
+                <hr/>
+                <InputGroup className="mb-1">
+                    <InputGroup.Text>Sample:</InputGroup.Text>
+                    <Form.Control value={samplePassword} type="text" readOnly />
+                    <Button onClick={generateSample} disabled={waitingFor.GENERATOR} variant="outline-secondary">{waitingFor.GENERATOR ? <Spinner animation="border" size="sm"/> : 'Generate'}</Button>
+                </InputGroup>
+
             </Form.Group>
         </Modal.Body>
         <Modal.Footer>

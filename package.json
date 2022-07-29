@@ -29,6 +29,7 @@
     "react-hot-toast": "^2.3.0",
     "react-icons": "^4.4.0",
     "react-tooltip": "^4.2.21",
+    "request": "^2.88.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
