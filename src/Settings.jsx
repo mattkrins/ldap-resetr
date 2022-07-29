@@ -149,12 +149,6 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
         <Modal.Header closeButton><Modal.Title>Settings</Modal.Title></Modal.Header>
         <Modal.Body>
             <Form.Group className="mb-3">
-                <Form.Label className="fw-semibold">Theme</Form.Label>
-                <InputGroup className="mb-0">
-                    <Form.Check checked={settings.DARK}  onChange={e => {updateValue('DARK',e.target.checked); }} type="switch" label="Use Dark Mode (Requires App Reload)" />
-                </InputGroup>
-            </Form.Group>
-            <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">LDAP URI</Form.Label>
                 <InputGroup className="mb-0">
                     <Form.Control value={settings.LDAP_URI} disabled={waitingFor.LDAP_URI} onInput={e => {updateValue('LDAP_URI',e.target.value)}} isValid={feedback.response.LDAP_URI} isInvalid={feedback.errors.LDAP_URI} placeholder='ldaps://10.10.1.1:636' />

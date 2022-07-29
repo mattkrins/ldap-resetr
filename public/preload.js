@@ -182,7 +182,6 @@ const resetPassword = (settings = {}, username = '', forceChange = false) => {
         }
         const encodedPassword = encodePassword(newPassword);
         
-
         client.modify(userDN, [
 					new ldap.Change({
 						operation: 'replace',
@@ -225,10 +224,33 @@ const resetPassword = (settings = {}, username = '', forceChange = false) => {
 }
 
 const defaults = {
-    LDAP_URI : '',
-    LDAP_AUTH_USER : '',
-    LDAP_AUTH_PASS : '',
-    PRINTER : 'Disabled'
+  LDAP_URI : '',
+  LDAP_AUTH_USER : '',
+  LDAP_AUTH_PASS : '',
+  PROXY : '',
+  PRINTER : 'Disabled',
+  PASS_DINO : false,
+  PASS_DINO_STR : true,
+  PASS_PRE : false,
+  PASS_APP : true,
+  PASS_CAP : true,
+  PASS_NUM : true,
+  PASS_WORDS : 2,
+  PRINT_TEMPLATE : 
+`#f2b %username%
+#f2b %password%
+
+Please change this password
+after logging in.
+#c `,
+  PRINT_TEMPLATE_F :
+`#f2b %username%
+#f2b %password%
+
+#b This is a temporary password.
+You will be asked to change this
+at next login.
+#c `
 };
 
 const config = {
@@ -261,6 +283,7 @@ process.once("loaded", () => {
   contextBridge.exposeInMainWorld("versions", process.versions);
   contextBridge.exposeInMainWorld("encryption", algorithm);
   contextBridge.exposeInMainWorld("version", ver);
+  contextBridge.exposeInMainWorld("defaults", defaults);
   contextBridge.exposeInMainWorld("LDAP", LDAP);
   contextBridge.exposeInMainWorld("printer", print);
   contextBridge.exposeInMainWorld("config", config);

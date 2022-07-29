@@ -16,38 +16,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 import Settings from './Settings';
 
-const { resetPassword, config, encrypt, encryption, version } = window
-
-const defaults = {
-  DARK : false,
-  LDAP_URI : '',
-  LDAP_AUTH_USER : '',
-  LDAP_AUTH_PASS : '',
-  PROXY : '',
-  PRINTER : 'Disabled',
-  PASS_DINO : false,
-  PASS_DINO_STR : true,
-  PASS_PRE : false,
-  PASS_APP : true,
-  PASS_CAP : true,
-  PASS_NUM : true,
-  PASS_WORDS : 2,
-  PRINT_TEMPLATE : 
-`#f2b %username%
-#f2b %password%
-
-Please change this password
-after logging in.
-#c `,
-  PRINT_TEMPLATE_F :
-`#f2b %username%
-#f2b %password%
-
-#b This is a temporary password.
-You will be asked to change this
-at next login.
-#c `
-};
+const { resetPassword, config, encrypt, encryption, version, defaults } = window
 
 function App() {
   const [showAbout, setShowAbout] = useState(false);
@@ -60,7 +29,6 @@ function App() {
   const [resetting, setResetting] = useState(false)
   useEffect(() => {
     config.load().then( ( config = {} )=> {
-      if (config.DARK) import ('bootstrap-dark-5/dist/css/bootstrap-dark.css');
       setSettings({ ...settings, ...config});
     }).catch((err)=>{
       console.error(String(err));
