@@ -151,7 +151,7 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
             <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">LDAP URI</Form.Label>
                 <InputGroup className="mb-0">
-                    <Form.Control value={settings.LDAP_URI} disabled={waitingFor.LDAP_URI} onInput={e => {updateValue('LDAP_URI',e.target.value)}} isValid={feedback.response.LDAP_URI} isInvalid={feedback.errors.LDAP_URI} placeholder='ldaps://10.10.1.1:636' />
+                    <Form.Control value={settings.LDAP_URI} onKeyDown={e => { if (e.key === 'Enter'){ldapURI()}  }} disabled={waitingFor.LDAP_URI} onInput={e => {updateValue('LDAP_URI',e.target.value)}} isValid={feedback.response.LDAP_URI} isInvalid={feedback.errors.LDAP_URI} placeholder='ldaps://10.10.1.1:636' />
                     <Button onClick={ldapURI} disabled={waitingFor.LDAP_URI} variant="outline-secondary">{waitingFor.LDAP_URI ? <Spinner animation="border" size="sm"/> : 'Test'}</Button>
                     <Form.Control.Feedback>{feedback.response.LDAP_URI && feedback.response.LDAP_URI[0]}</Form.Control.Feedback> 
                     <Form.Control.Feedback type="invalid" className="m-0">{feedback.errors.LDAP_URI && feedback.errors.LDAP_URI[0]}</Form.Control.Feedback>
@@ -161,7 +161,7 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
             <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">LDAP Login</Form.Label>
                 <InputGroup className="mb-0">
-                    <Form.Control value={settings.LDAP_AUTH_USER} disabled={waitingFor.LDAP_AUTH} onInput={e => {updateValue('LDAP_AUTH_USER',e.target.value)}} isValid={feedback.response.LDAP_AUTH} isInvalid={feedback.errors.LDAP_AUTH} placeholder='domain\username' />
+                    <Form.Control value={settings.LDAP_AUTH_USER} onKeyDown={e => { if (e.key === 'Enter'){ldapAuth()}  }} disabled={waitingFor.LDAP_AUTH} onInput={e => {updateValue('LDAP_AUTH_USER',e.target.value)}} isValid={feedback.response.LDAP_AUTH} isInvalid={feedback.errors.LDAP_AUTH} placeholder='domain\username' />
                     <Form.Control type='password' value={settings.LDAP_AUTH_PASS} disabled={waitingFor.LDAP_AUTH} onInput={e => {updateValue('LDAP_AUTH_PASS',e.target.value)}} isValid={feedback.response.LDAP_AUTH} isInvalid={feedback.errors.LDAP_AUTH} placeholder='password' />
                     <Button onClick={ldapAuth} disabled={waitingFor.LDAP_AUTH} variant="outline-secondary">{waitingFor.LDAP_AUTH ? <Spinner animation="border" size="sm"/> : 'Test'}</Button>
                     <Form.Control.Feedback>{feedback.response.LDAP_AUTH && feedback.response.LDAP_AUTH[0]}</Form.Control.Feedback> 
@@ -198,7 +198,7 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
                 <InputGroup className="mb-0"><Form.Check checked={settings.PASS_DINO_STR}  onChange={e => {updateValue('PASS_DINO_STR',e.target.checked); }} type="switch" label="Simple / Strong" /></InputGroup>
                 <Form.Label className="fw-semibold">Proxy</Form.Label>
                 <InputGroup className="mb-3">
-                    <Form.Control value={settings.PROXY} disabled={waitingFor.PROXY} onInput={e => {updateValue('PROXY',e.target.value)}} isValid={feedback.response.PROXY} isInvalid={feedback.errors.PROXY} placeholder='http://proxy:8080' />
+                    <Form.Control value={settings.PROXY} disabled={waitingFor.PROXY} onKeyDown={e => { if (e.key === 'Enter'){PROXY()}  }} onInput={e => {updateValue('PROXY',e.target.value)}} isValid={feedback.response.PROXY} isInvalid={feedback.errors.PROXY} placeholder='http://proxy:8080' />
                     <Button onClick={PROXY} disabled={waitingFor.PROXY} variant="outline-secondary">{waitingFor.PROXY ? <Spinner animation="border" size="sm"/> : 'Test'}</Button>
                     <Form.Control.Feedback>{feedback.response.LDAP_AUTH && feedback.response.LDAP_AUTH[0]}</Form.Control.Feedback> 
                     <Form.Control.Feedback type="invalid" className="m-0">{feedback.errors.LDAP_AUTH && feedback.errors.LDAP_AUTH[0]}</Form.Control.Feedback>

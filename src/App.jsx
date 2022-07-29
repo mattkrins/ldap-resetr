@@ -34,7 +34,6 @@ function App() {
       console.error(String(err));
       setError(String(err));
     });
-
   }, []);
   const handleClick = () => {
     if (resetting) return;
