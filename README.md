@@ -18,8 +18,6 @@ Change the `secretKey` variable in public/preload.js
 ## Configuration
 Application settings are available via the cog icon in the top left corner:
 
-### Application Theme
-Switch between light and dark mode themes. Application restart is required to apply.
 ### LDAP URI
 This is the host / target LDAP server. A secure / SSL connection is required to make changes to passwords so you likely want to use port 636 and protocol ldaps://.
 ### LDAP Login
@@ -51,7 +49,7 @@ at next login.
 ```
 
 ### Formatting Legend
-| Character | Purpose |
+| Key | Purpose |
 | --- | --- |
 | f0 | Font Size (0-7) |
 | c | Cut receipt on this line |
