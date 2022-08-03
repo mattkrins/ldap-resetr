@@ -23,7 +23,7 @@ This is the host / target LDAP server. A secure / SSL connection is required to 
 ### LDAP Login
 Username / Password to authenticate with the host / target LDAP server. Username must be prefixed by the target domain or an LDAP distinguished name (DN), eg. cn=John,ou=Users,dc=com,dc=domain
 ### Auto-Print
-Select a thermal printer to print the newly generated password on. (currently windows only)
+Select a thermal printer brand (EPSON/STAR) and target pritner to print the newly generated password on. (currently windows only)
 
 **Note**: To use a locally connected printer (not networked) you will need to share the local printer under the same name so it can be accessed via \\\\localhost\\PrinterName.
 
@@ -48,7 +48,7 @@ at next login.
 #c 
 ```
 
-### Formatting Legend
+#### Formatting Legend
 | Key | Purpose |
 | --- | --- |
 | f0 | Font Size (0-7) |
@@ -58,6 +58,9 @@ at next login.
 | ! | Invert text color (white on black) |
 | < | Align text left |
 | > | Align text right |
+
+### Password Generation
+Customise generated passwords or use the [DinoPass](https://www.dinopass.com/) API (proxy setting available).
 
 ## Available Scripts
 
