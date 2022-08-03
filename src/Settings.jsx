@@ -171,6 +171,14 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
             </Form.Group>
             <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Auto-Print {waitingFor.PRINTERS && <Spinner animation="border" size="sm"/>}</Form.Label>
+                <Form.Select className="mb-3" value={settings.PRINT_BRAND} onChange={e => {updateValue('PRINT_BRAND',e.target.value)}}>
+                    <option value="Disabled">Disabled</option>
+                    <option value="EPSON">EPSON</option>
+                    <option value="STAR">STAR</option>
+                    {/* <option value="TANCA">TANCA</option> https://github.com/Klemen1337/node-thermal-printer/commit/fba52af90d86d31337ae656203442a9a5e63ed73 */}
+                </Form.Select>
+                {(settings.PRINT_BRAND!=="Disabled")&&(<>
+                <Form.Text className="text-muted">Target Printer</Form.Text>
                 <InputGroup className="mb-3">
                     <ListGroup as="ul" style={{width:"100%"}} >
                         {Printers}
@@ -181,6 +189,7 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
                 <Form.Text className="text-muted">Text Template (if change forced)</Form.Text>
                 <Form.Control className="mb-3" value={settings.PRINT_TEMPLATE_F} onChange={e => {updateValue('PRINT_TEMPLATE_F',e.target.value)}}as="textarea" style={{ height: '100px' }} />
                 <Form.Text className="text-muted">Read github docs for print templating/formatting.</Form.Text>
+                </>)}
             </Form.Group>
             <Form.Group className="mb-3">
                 <Form.Label className="fw-semibold">Password Generation</Form.Label>
@@ -210,7 +219,11 @@ export default function Settings({show, setShow, settings, setSettings, toast}) 
                     <Form.Control value={samplePassword} type="text" readOnly />
                     <Button onClick={generateSample} disabled={waitingFor.GENERATOR} variant="outline-secondary">{waitingFor.GENERATOR ? <Spinner animation="border" size="sm"/> : 'Generate'}</Button>
                 </InputGroup>
-
+                <Form.Group className="mb-3">
+                    <Form.Label className="fw-semibold">General</Form.Label>
+                    <InputGroup className="mb-0"><Form.Check checked={settings.FORCETICK}  onChange={e => {updateValue('FORCETICK',e.target.checked); }} type="switch" label="Change on login ticked by default" /></InputGroup>
+                    <InputGroup className="mb-0"><Form.Check checked={settings.CLEAR}  onChange={e => {updateValue('CLEAR',e.target.checked); }} type="switch" label="Clear username on reset" /></InputGroup>
+                </Form.Group>
             </Form.Group>
         </Modal.Body>
         <Modal.Footer>

@@ -30,6 +30,7 @@ function App() {
   useEffect(() => {
     config.load().then( ( config = {} )=> {
       setSettings({ ...settings, ...config});
+      setForceChange(config.FORCETICK)
     }).catch((err)=>{
       console.error(String(err));
       setError(String(err));
@@ -47,6 +48,7 @@ function App() {
       clearTimeout(timeout);
       console.log(entry)
       setResetting(false);
+      if(settings.CLEAR) setUsername('')
       toast.success('Password reset to ' + entry)
     }).catch((err)=>{
       clearTimeout(timeout);

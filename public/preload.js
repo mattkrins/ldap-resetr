@@ -41,7 +41,7 @@ const print = {
       if (!name || name==="Disabled") reject("No printer selected")
       console.log("Sending print job to interface:", name)
       let job = new ThermalPrinter({
-        type: PrinterTypes.EPSON,
+        type: PrinterTypes[settings.PRINT_BRAND],
         interface: name,
         ...options
       });
@@ -203,18 +203,16 @@ const resetPassword = (settings = {}, username = '', forceChange = false) => {
 					else {
             client.unbind();
             if(!settings.PRINTER){ resolve(newPassword); }
-            if (settings.PRINTER.name !== "Disabled"){
-              let name = settings.PRINTER.name;
-              if ( settings.PRINTER.name.search("\\\\") < 0 ) name = "\\\\localhost\\"+settings.PRINTER.name;
-              print.thermal(name, { newPassword, username, forceChange }, {}, settings)
-              .then( ( jobID )=> {
-                return resolve(newPassword, jobID);
-              }).catch((err)=>{
-                return reject( `Password set to ${newPassword} but failed to print (${String(err)}) ` );
-              });
-            } else {
-              return resolve(newPassword);
-            }
+            if (settings.PRINT_BRAND === "Disabled") return resolve(newPassword);
+            if (settings.PRINTER.name === "Disabled") return resolve(newPassword);
+            let name = settings.PRINTER.name;
+            if ( settings.PRINTER.name.search("\\\\") < 0 ) name = "\\\\localhost\\"+settings.PRINTER.name;
+            print.thermal(name, { newPassword, username, forceChange }, {}, settings)
+            .then( ( jobID )=> {
+              return resolve(newPassword, jobID);
+            }).catch((err)=>{
+              return reject( `Password set to ${newPassword} but failed to print (${String(err)}) ` );
+            });
           }
 				});
 
@@ -235,7 +233,10 @@ const defaults = {
   PASS_APP : true,
   PASS_CAP : true,
   PASS_NUM : true,
+  FORCETICK : true,
+  CLEAR : true,
   PASS_WORDS : 2,
+  PRINT_BRAND : "EPSON",
   PRINT_TEMPLATE : 
 `#f2b %username%
 #f2b %password%

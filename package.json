@@ -1,6 +1,6 @@
 {
   "name": "ldap-resetr",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "author": "mattkrins",
   "description": "Reset LDAP user password and print with one click",
   "private": true,
